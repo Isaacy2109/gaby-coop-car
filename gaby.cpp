@@ -1,42 +1,32 @@
-#include <Arduino.h>
-
-// [] TROCAR O 5V PARA 12V DA PONTE H
-// [] COLOCAR O GND DA PONTE H NO ARDUINO
-// [] FAZER O TESTE NO 5V DO ARDUINO NO NA PORTA motorTrasEsq/Dir
-// [] COLOCAR O ULTRASONICO
-// [] COLOCAR O SENSOR DE LINHA CENTRAL
-
-// Motores
+// Motor Frente Direito
 #define motorFrenteDir1 22
 #define motorFrenteDir2 24
 #define velFrenteDir 11
 
-#define motorFrenteEsq1 26
-#define motorFrenteEsq2 28
+// Motor Frente Esquerda
+#define motorFrenteEsq1 3
+#define motorFrenteEsq2 2
 #define velFrenteEsq 10
 
-#define motorTrasDir1 30
-#define motorTrasDir2 32
+// Motor Atrás Direito
+#define motorTrasDir1 8
+#define motorTrasDir2 7
 #define velTrasDir 9
 
-#define motorTrasEsq1 34
-#define motorTrasEsq2 36
-#define velTrasEsq 8
+// Motor Atrás Esquerdo
+#define motorTrasEsq1 6
+#define motorTrasEsq2 5
+#define velTrasEsq 4
 
 int vel;
 
-// Sensor Obstáculo
-#define trig 46
-#define echo 48
-int ultimo = 0;
-int limite = 15;
-
-// Sensor Linha
-int esq = 44;
-int cen = 42;
-int dir = 40;
+// IR Linha
+int esq = 13;
+int dir = 12;
+int cen = 26;
 
 void frente(){
+  // Frente
   digitalWrite(motorFrenteDir1,HIGH);
   digitalWrite(motorFrenteDir2,LOW);
   analogWrite(velFrenteDir,vel);
@@ -45,16 +35,18 @@ void frente(){
   digitalWrite(motorFrenteEsq2,LOW);
   analogWrite(velFrenteEsq,vel); 
 
-  digitalWrite(motorTrasDir1,LOW);
+  // Atrás
+  digitalWrite(motorTrasDir1,HIGH);
   digitalWrite(motorTrasDir2,LOW);
   analogWrite(velTrasDir,vel);
 
-  digitalWrite(motorTrasEsq1,LOW);
+  digitalWrite(motorTrasEsq1,HIGH);
   digitalWrite(motorTrasEsq2,LOW);
   analogWrite(velTrasEsq,vel);
 }
 
 void para(){
+  // Frente
   digitalWrite(motorFrenteDir1,LOW);
   digitalWrite(motorFrenteDir2,LOW);
   analogWrite(velFrenteDir,vel);
@@ -63,6 +55,7 @@ void para(){
   digitalWrite(motorFrenteEsq2,LOW);
   analogWrite(velFrenteEsq,vel); 
 
+  // Atrás
   digitalWrite(motorTrasDir1,LOW);
   digitalWrite(motorTrasDir2,LOW);
   analogWrite(velTrasDir,vel);
@@ -73,120 +66,66 @@ void para(){
 }
 
 void direita(){
+  // Frente
   digitalWrite(motorFrenteDir1,HIGH);
   digitalWrite(motorFrenteDir2,LOW);
-  analogWrite(velFrenteDir,vel);
-  
-  digitalWrite(motorFrenteEsq1,LOW);
-  digitalWrite(motorFrenteEsq2,LOW);
-  analogWrite(velFrenteEsq,vel); 
-
-  digitalWrite(motorTrasDir1,LOW);
-  digitalWrite(motorTrasDir2,LOW);
-  analogWrite(velTrasDir,vel);
-
-  digitalWrite(motorTrasEsq1,LOW);
-  digitalWrite(motorTrasEsq2,LOW);
-  analogWrite(velTrasEsq,vel);
-}
-
-void esquerda(){
-  digitalWrite(motorFrenteDir1,LOW);
-  digitalWrite(motorFrenteDir2,LOW);
-  analogWrite(velFrenteDir,vel);
+  analogWrite(velFrenteDir,130);
   
   digitalWrite(motorFrenteEsq1,HIGH);
   digitalWrite(motorFrenteEsq2,LOW);
-  analogWrite(velFrenteEsq,vel); 
+  analogWrite(velFrenteEsq,60); 
 
-  digitalWrite(motorTrasDir1,LOW);
+  // Atrás
+  digitalWrite(motorTrasDir1,HIGH);
   digitalWrite(motorTrasDir2,LOW);
-  analogWrite(velTrasDir,vel);
+  analogWrite(velTrasDir,130);
 
-  digitalWrite(motorTrasEsq1,LOW);
+  digitalWrite(motorTrasEsq1,HIGH);
   digitalWrite(motorTrasEsq2,LOW);
-  analogWrite(velTrasEsq,vel);
+  analogWrite(velTrasEsq,60);
 }
 
-void seguirLinha(){
-  if(digitalRead(esq) == HIGH && digitalRead(dir) == HIGH){
-    frente();
-  }
-  else if(digitalRead(esq) == HIGH && digitalRead(dir) == LOW){
-    esquerda();
-    ultimo = 2;
-  }
-  else if (digitalRead(esq) == LOW && digitalRead(dir) == HIGH)
-  {
-    direita();
-    ultimo = 1;
-  }
-}
-
-long distancia(){
-  digitalWrite(trig,LOW);
-  delayMicroseconds(2);
+void esquerda(){
+  // Frente
+  digitalWrite(motorFrenteDir1,HIGH);
+  digitalWrite(motorFrenteDir2,LOW);
+  analogWrite(velFrenteDir,60);
   
-  digitalWrite(trig,HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trig,LOW);
+  digitalWrite(motorFrenteEsq1,HIGH);
+  digitalWrite(motorFrenteEsq2,LOW);
+  analogWrite(velFrenteEsq,130); 
 
-  long duracao = pulseIn(echo,HIGH);
+  // Atrás
+  digitalWrite(motorTrasDir1,HIGH);
+  digitalWrite(motorTrasDir2,LOW);
+  analogWrite(velTrasDir,60);
 
-  long dist = duracao * 0.034 / 2;
-  return dist;
-}
-
-void procurarLinha(){
-  while(true){
-    if (cen == HIGH || esq == HIGH || dir == HIGH){
-      break;
-    }
-    if (ultimo = 2){
-      esquerda();
-    }
-    else if (ultimo = 1){
-      direita();
-    }
-    else{
-      direita();
-    }
-  }
-}
-
-void desviar(){
-  para();
-  delay(200);
-
-  direita();
-  delay(400);
-
-  frente();
-  delay(500);
-
-  procurarLinha();
+  digitalWrite(motorTrasEsq1,HIGH);
+  digitalWrite(motorTrasEsq2,LOW);
+  analogWrite(velTrasEsq,130);
 }
 
 void setup(){
-  pinMode(trig,OUTPUT);
-  pinMode(echo,INPUT);
-
+  // IR Linha
   pinMode(esq,INPUT);
-  pinMode(cen,INPUT);
   pinMode(dir,INPUT);
   
+  // Motor Frente Direito
   pinMode(motorFrenteDir1,OUTPUT);
   pinMode(motorFrenteDir2,OUTPUT);
   pinMode(velFrenteDir,OUTPUT);
 
+  // Motor Frente Esquerdo
   pinMode(motorFrenteEsq1,OUTPUT);
   pinMode(motorFrenteEsq2,OUTPUT);
   pinMode(velFrenteEsq,OUTPUT);
 
+  // Motor Atrás Direito
   pinMode(motorTrasDir1,OUTPUT);
   pinMode(motorTrasDir2,OUTPUT);
   pinMode(velTrasDir,OUTPUT);
 
+  // Motor Atrás Esquerdo
   pinMode(motorTrasEsq1,OUTPUT);
   pinMode(motorTrasEsq2,OUTPUT);
   pinMode(velTrasEsq,OUTPUT);
@@ -198,11 +137,42 @@ void setup(){
 void loop(){
   vel = 120;
 
-  long dist = distancia();
-  if (dist < limite){
-    desviar();
+  // Frente
+  if(digitalRead(esq) == HIGH && digitalRead(dir) == HIGH){
+    frente();
+  } 
+
+  // Parar, Por equanto não para apenas segue reto
+  if(digitalRead(esq) == LOW && digitalRead(dir) == LOW){
+    frente();
+  } 
+
+  // Esqerda
+  if(digitalRead(esq) == HIGH && digitalRead(dir) == LOW){
+    esquerda();
+  } 
+
+  //  Direita
+  if(digitalRead(esq) == LOW && digitalRead(dir) == HIGH){
+    direita();
   }
-  else{
-    seguirLinha();
-  }
+
+  // Frente
+  digitalWrite(motorFrenteDir1,HIGH);
+  digitalWrite(motorFrenteDir2,LOW);
+  analogWrite(velFrenteDir,130);
+  
+  digitalWrite(motorFrenteEsq1,HIGH);
+  digitalWrite(motorFrenteEsq2,LOW);
+  analogWrite(velFrenteEsq,60); 
+
+  // Atrás
+  digitalWrite(motorTrasDir1,HIGH);
+  digitalWrite(motorTrasDir2,LOW);
+  analogWrite(velTrasDir,130);
+
+  digitalWrite(motorTrasEsq1,HIGH);
+  digitalWrite(motorTrasEsq2,LOW);
+  analogWrite(velTrasEsq,60);  
+
 }
