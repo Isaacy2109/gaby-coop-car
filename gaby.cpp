@@ -139,7 +139,7 @@ long distancia(){
 
 void procurarLinha(){
   while(true){
-    if (cen == HIGH && esq == HIGH && dir == HIGH){
+    if (cen == HIGH || esq == HIGH || dir == HIGH){
       break;
     }
     if (ultimo = 2){
