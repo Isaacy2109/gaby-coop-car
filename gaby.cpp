@@ -1,215 +1,135 @@
 #include <Arduino.h>
 
-// TO DO:
-// [] TESTAR OS SENSORES "esq" e "dir" E SE SEGUEM LINHA
-// [] COLOCAR O SENSOR "cen"
-// [] TESTAR O MODO GAP
-// [] TESTAR O DESVIO DE OBSTÁCULO
-// [] MEMORIA DE ULTIMA DIRAÇÃO PÓS DESVIO
-
-
 // Motores
-#define motorFrenteDir1 22
-#define motorFrenteDir2 24
-#define velFrenteDir 11
+#define motorFrenteDireita1 22
+#define motorFrenteDireita2 24
+#define velFrenteDireita 11
 
-#define motorFrenteEsq1 26
-#define motorFrenteEsq2 28
-#define velFrenteEsq 10
+#define motorFrenteEsquerda1 26
+#define motorFrenteEsquerda2 28
+#define velFrenteEsquerda 10
 
-#define motorTrasDir1 30
-#define motorTrasDir2 32
-#define velTrasDir 9
+#define motorTrasDireita1 30
+#define motorTrasDireita2 32
+#define velTrasDireita 9
 
-#define motorTrasEsq1 34
-#define motorTrasEsq2 36
-#define velTrasEsq 8
+#define motorTrasEsquerda1 32
+#define motorTrasEsquerda2 36
+#define velTrasEsquerda 8
 
-int vel;
-
-// Sensor Obstáculo
-#define trig 46
-#define echo 48
-int ultimoMovimento = 0;
-int limiteDistancia = 15;
+int velFrente;
+int velTras;
 
 // Sensor Linha
-int esq = 44;
-int cen = 42;
-int dir = 40;
+int linhaEsquerda = 44;
+int linhaDireita = 40;
 
-void frente(){
-  digitalWrite(motorFrenteDir1,HIGH);
-  digitalWrite(motorFrenteDir2,LOW);
-  analogWrite(velFrenteDir,100);
-  
-  digitalWrite(motorFrenteEsq1,HIGH);
-  digitalWrite(motorFrenteEsq2,LOW);
-  analogWrite(velFrenteEsq,100); 
+void parar(){
+    digitalWrite(motorFrenteDireita1, LOW);
+    digitalWrite(motorFrenteDireita2, LOW);
+    analogWrite(velFrenteDireita, 0);
 
-  digitalWrite(motorTrasDir1,HIGH);
-  digitalWrite(motorTrasDir2,LOW);
-  analogWrite(velTrasDir,70);
+    digitalWrite(motorFrenteEsquerda1, LOW);
+    digitalWrite(motorFrenteEsquerda2, LOW);
+    analogWrite(velFrenteEsquerda, 0);
 
-  digitalWrite(motorTrasEsq1,HIGH);
-  digitalWrite(motorTrasEsq2,LOW);
-  analogWrite(velTrasEsq,70);
+    digitalWrite(motorTrasDireita1, LOW);
+    digitalWrite(motorFrenteDireita2, LOW);
+    analogWrite(velTrasDireita, 0);
+
+    digitalWrite(motorTrasEsquerda1, LOW);
+    digitalWrite(motorTrasEsquerda2, LOW);
+    analogWrite(velTrasEsquerda, 0);
 }
 
-void para(){
-  digitalWrite(motorFrenteDir1,LOW);
-  digitalWrite(motorFrenteDir2,LOW);
-  analogWrite(velFrenteDir,vel);
-  
-  digitalWrite(motorFrenteEsq1,LOW);
-  digitalWrite(motorFrenteEsq2,LOW);
-  analogWrite(velFrenteEsq,vel); 
+void andarFrente(int velFrente, int velTras){
+    digitalWrite(motorFrenteDireita1, HIGH);
+    digitalWrite(motorFrenteDireita2, LOW);
+    analogWrite(velFrenteDireita, velFrente);
 
-  digitalWrite(motorTrasDir1,LOW);
-  digitalWrite(motorTrasDir2,LOW);
-  analogWrite(velTrasDir,vel);
+    digitalWrite(motorFrenteEsquerda1, HIGH);
+    digitalWrite(motorFrenteEsquerda2, LOW);
+    analogWrite(velFrenteEsquerda, velFrente);
 
-  digitalWrite(motorTrasEsq1,LOW);
-  digitalWrite(motorTrasEsq2,LOW);
-  analogWrite(velTrasEsq,vel);
+    digitalWrite(motorTrasDireita1, HIGH);
+    digitalWrite(motorFrenteDireita2, LOW);
+    analogWrite(velTrasDireita, velTras);
+
+    digitalWrite(motorTrasEsquerda1, HIGH);
+    digitalWrite(motorTrasEsquerda2, LOW);
+    analogWrite(velTrasEsquerda, velTras);
 }
 
-void direita(){
-  digitalWrite(motorFrenteDir1,HIGH);
-  digitalWrite(motorFrenteDir2,LOW);
-  analogWrite(velFrenteDir,100);
-  
-  digitalWrite(motorFrenteEsq1,HIGH);
-  digitalWrite(motorFrenteEsq2,LOW);
-  analogWrite(velFrenteEsq,70); 
+void andarDireita(int velFrente, int velTras){
+    digitalWrite(motorFrenteDireita1, HIGH);
+    digitalWrite(motorFrenteDireita2, LOW);
+    analogWrite(velFrenteDireita, velFrente);
 
-  digitalWrite(motorTrasDir1,HIGH);
-  digitalWrite(motorTrasDir2,LOW);
-  analogWrite(velTrasDir,70);
+    digitalWrite(motorFrenteEsquerda1, LOW);
+    digitalWrite(motorFrenteEsquerda2, HIGH);
+    analogWrite(velFrenteEsquerda, velFrente);
 
-  digitalWrite(motorTrasEsq1,HIGH);
-  digitalWrite(motorTrasEsq2,LOW);
-  analogWrite(velTrasEsq,40);
+    digitalWrite(motorTrasDireita1, HIGH);
+    digitalWrite(motorFrenteDireita2, LOW);
+    analogWrite(velTrasDireita, velTras);
+
+    digitalWrite(motorTrasEsquerda1, LOW);
+    digitalWrite(motorTrasEsquerda2, HIGH);
+    analogWrite(velTrasEsquerda, velTras);
 }
 
-void esquerda(){
-  digitalWrite(motorFrenteDir1,HIGH);
-  digitalWrite(motorFrenteDir2,LOW);
-  analogWrite(velFrenteDir,70);
-  
-  digitalWrite(motorFrenteEsq1,HIGH);
-  digitalWrite(motorFrenteEsq2,LOW);
-  analogWrite(velFrenteEsq,100); 
+void andarEsquerda(int velFrente, int velTras){
+    digitalWrite(motorFrenteDireita1, LOW);
+    digitalWrite(motorFrenteDireita2, HIGH);
+    analogWrite(velFrenteDireita, velFrente);
 
-  digitalWrite(motorTrasDir1,HIGH);
-  digitalWrite(motorTrasDir2,LOW);
-  analogWrite(velTrasDir,40);
+    digitalWrite(motorFrenteEsquerda1, HIGH);
+    digitalWrite(motorFrenteEsquerda2, LOW);
+    analogWrite(velFrenteEsquerda, velFrente);
 
-  digitalWrite(motorTrasEsq1,HIGH);
-  digitalWrite(motorTrasEsq2,LOW);
-  analogWrite(velTrasEsq,70);
+    digitalWrite(motorTrasDireita1, LOW);
+    digitalWrite(motorFrenteDireita2, HIGH);
+    analogWrite(velTrasDireita, velTras);
+
+    digitalWrite(motorTrasEsquerda1, HIGH);
+    digitalWrite(motorTrasEsquerda2, LOW);
+    analogWrite(velTrasEsquerda, velTras);
 }
-
-// 67
 
 void seguirLinha(){
-  if(digitalRead(esq) == LOW && digitalRead(dir) == HIGH){
-    para();
-    delay(200);
-    frente();
-    ultimoMovimento = 1;
-  }
-
-  else if(digitalRead(esq) == HIGH && digitalRead(dir) == LOW){
-    para();
-    delay(200);
-    esquerda();
-    ultimoMovimento = 2;
-  }
-
-  frente();
-}
-
-long distancia(){
-  digitalWrite(trig,LOW);
-  delayMicroseconds(2);
-  
-  digitalWrite(trig,HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trig,LOW);
-
-  long duracao = pulseIn(echo,HIGH);
-
-  long dist = duracao * 0.034 / 2;
-  return dist;
-}
-
-void procurarLinha(){
-  while(true){
-    if (esq == HIGH && dir == HIGH){
-      break;
+    if(digitalRead(linhaEsquerda) == HIGH && digitalRead(linhaDireita) == HIGH){
+        andarFrente(255, 255); // Velocidade: Frente / Atrás
+    } else if(digitalRead(linhaEsquerda) == HIGH && digitalRead(linhaDireita) == HIGH){
+        andarEsquerda(255, 255); // Velocidade: Frente / Atrás
+    } else if(digitalRead(linhaEsquerda) == LOW && digitalRead(linhaDireita) == HIGH){
+        andarDireita(255, 255); // Velocidade: Frente / Atrás
     }
-
-    else if (ultimoMovimento == 2){
-      esquerda();
-    }
-    
-    else if (ultimoMovimento == 1){
-      direita();
-    }
-    frente();
-  }
-}
-
-void desviar(){
-  para();
-  delay(200);
-
-  direita();
-  delay(400);
-
-  frente();
-  delay(500);
-
-  procurarLinha();
 }
 
 void setup(){
-  pinMode(trig,OUTPUT);
-  pinMode(echo,INPUT);
+    pinMode(linhaEsquerda, INPUT);
+    pinMode(linhaDireita, INPUT);
 
-  pinMode(esq,INPUT);
-  pinMode(cen,INPUT);
-  pinMode(dir,INPUT);
-  
-  pinMode(motorFrenteDir1,OUTPUT);
-  pinMode(motorFrenteDir2,OUTPUT);
-  pinMode(velFrenteDir,OUTPUT);
+    pinMode(motorFrenteDireita1, OUTPUT);
+    pinMode(motorFrenteDireita2, OUTPUT);
+    pinMode(velFrenteDireita, OUTPUT);
 
-  pinMode(motorFrenteEsq1,OUTPUT);
-  pinMode(motorFrenteEsq2,OUTPUT);
-  pinMode(velFrenteEsq,OUTPUT);
+    pinMode(motorFrenteEsquerda1, OUTPUT);
+    pinMode(motorFrenteEsquerda2, OUTPUT);
+    pinMode(velFrenteEsquerda, OUTPUT);
 
-  pinMode(motorTrasDir1,OUTPUT);
-  pinMode(motorTrasDir2,OUTPUT);
-  pinMode(velTrasDir,OUTPUT);
+    pinMode(motorTrasDireita1, OUTPUT);
+    pinMode(motorTrasDireita2, OUTPUT);
+    pinMode(velTrasDireita, OUTPUT);
 
-  pinMode(motorTrasEsq1,OUTPUT);
-  pinMode(motorTrasEsq2,OUTPUT);
-  pinMode(velTrasEsq,OUTPUT);
+    pinMode(motorTrasEsquerda1, OUTPUT);
+    pinMode(motorTrasEsquerda2, OUTPUT);
+    pinMode(velTrasEsquerda, OUTPUT);
 }
 
-// IT'S TIME TO SHINE, MY GABY!!
-// NHINHINHINHI
-
+/* It's Time to Shine, my Gaby!!
+Nhinhinhinhinhi */ 
 void loop(){
-  vel = 120;
-
-  /* long dist = distancia();
-  if (dist < limiteDistancia){
-    desviar();
-  }
-  seguirLinha(); */
-
-  seguirLinha();
+    // Seguir Linha
+    seguirLinha();
 }
