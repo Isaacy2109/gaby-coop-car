@@ -1,5 +1,3 @@
-#include <Arduino.h>
-
 // Motores
 #define motorFrenteDireita1 22
 #define motorFrenteDireita2 24
@@ -19,6 +17,8 @@
 
 int velFrente;
 int velTras;
+
+int ultimo;
 
 // Sensor Linha
 int linhaEsquerda = 44;
@@ -97,6 +97,22 @@ void andarEsquerda(int velFrente, int velTras){
 }
 
 void seguirLinha(){
+
+    if(digitalRead(linhaEsquerda) == LOW && digitalRead(linhaDireita) == HIGH){
+        andarDireita(255,255); // Velocidade: Frente / Atrás 
+        ultimo = 1;
+    }else if(digitalRead(linhaEsquerda) == HIGH && digitalRead(linhaEsquerda) == LOW){
+        andarEsquerda(255,255); // Velocidade: Frente / Atrás
+        ultimo = 2
+    }else{
+        andarFrente(255,255); // Velocidade: Frente / Atrás
+    }
+
+    /*
+
+    // Não sei porque fiz isso 
+    // Mas está melhor
+
     if(digitalRead(linhaEsquerda) == HIGH && digitalRead(linhaDireita) == HIGH){
         andarFrente(255, 255); // Velocidade: Frente / Atrás
     } else if(digitalRead(linhaEsquerda) == HIGH && digitalRead(linhaDireita) == HIGH){
@@ -104,6 +120,7 @@ void seguirLinha(){
     } else if(digitalRead(linhaEsquerda) == LOW && digitalRead(linhaDireita) == HIGH){
         andarDireita(255, 255); // Velocidade: Frente / Atrás
     }
+    */
 }
 
 void setup(){
