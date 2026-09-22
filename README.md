@@ -3,4 +3,4 @@ Carrinho Seguidor de Linha + Regaste, Para Olimpíada Brasileira de Robótica - 
 
 Made By Roger
 
-## Obs.: Depois coloco mais coisas
+## Obs.: Vou colocar mais coisa, Guilherme 🕊️
