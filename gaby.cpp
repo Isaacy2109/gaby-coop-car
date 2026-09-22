@@ -150,4 +150,3 @@ void loop(){
     // Seguir Linha
     seguirLinha();
 }
-// Misericordia
